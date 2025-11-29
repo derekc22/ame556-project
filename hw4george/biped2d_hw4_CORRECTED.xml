@@ -1,0 +1,76 @@
+<mujoco model="biped2d_hw4">
+  <compiler angle="radian"/>
+
+  <option gravity="0 0 -9.81"
+          integrator="RK4"
+          timestep="0.00025">
+    <flag override="enable"/>
+  </option>
+
+  <!-- REQUIRED FOR VIDEO RENDERING -->
+  <visual>
+    <global offwidth="1920" offheight="1080"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 2.0" dir="0 0 -1" directional="true"/>
+    <camera name="side" mode="trackcom" pos="0 -2.0 1.0" fovy="40"/>
+
+    <geom name="floor" type="box" pos="0 0 -0.05" size="5 5 0.05" material="groundplane" contype="1" conaffinity="1" condim="3" friction="0.7 0.5 0"/>
+
+    <body name="trunk" pos="0 0 1.05">
+      <freejoint/>
+      <!-- Trunk: 15cm x 8cm x 25cm, mass 8kg - NO COLLISIONS -->
+      <geom name="trunk_geom" type="box" size="0.075 0.04 0.125" mass="8.0" 
+            contype="0" conaffinity="0" rgba="0.2 0.6 0.9 1"/>
+
+      <!-- LEFT LEG: Both legs attached at exact center bottom (0, 0, -0.125) -->
+      <body name="left_hip" pos="0 0 -0.125">
+        <joint name="q1" type="hinge" axis="0 1 0" range="-3.14 3.14"/>
+        <!-- Left thigh: 22cm capsule, radius 2cm, mass 0.25kg - NO COLLISIONS -->
+        <inertial mass="0.25" diaginertia="0.0001 0.001006 0.001006" pos="0 0 -0.11"/>
+        <geom type="capsule" fromto="0 0 0 0 0 -0.22" size="0.02" 
+              contype="0" conaffinity="0" rgba="0.3 0.8 0.3 1"/>
+        
+        <body name="left_shank" pos="0 0 -0.22">
+          <joint name="q2" type="hinge" axis="0 1 0" range="-3.14 3.14"/>
+          <!-- Left shank: 22cm capsule, radius 1.8cm, mass 0.25kg -->
+          <inertial mass="0.25" diaginertia="0.0001 0.001006 0.001006" pos="0 0 -0.11"/>
+          <geom type="capsule" fromto="0 0 0 0 0 -0.22" size="0.018" rgba="0.3 0.8 0.3 1"/>
+          <geom name="l_toe" type="sphere" pos="0 0 -0.22" size="0.02" rgba="0.9 0.5 0.2 1"/>
+        </body>
+      </body>
+
+      <!-- RIGHT LEG: Attached at exact same point as left -->
+      <body name="right_hip" pos="0 0 -0.125">
+        <joint name="q3" type="hinge" axis="0 1 0" range="-3.14 3.14"/>
+        <!-- Right thigh: 22cm capsule, radius 2cm, mass 0.25kg - NO COLLISIONS -->
+        <inertial mass="0.25" diaginertia="0.0001 0.001006 0.001006" pos="0 0 -0.11"/>
+        <geom type="capsule" fromto="0 0 0 0 0 -0.22" size="0.02" 
+              contype="0" conaffinity="0" rgba="0.8 0.3 0.3 1"/>
+        
+        <body name="right_shank" pos="0 0 -0.22">
+          <joint name="q4" type="hinge" axis="0 1 0" range="-3.14 3.14"/>
+          <!-- Right shank: 22cm capsule, radius 1.8cm, mass 0.25kg -->
+          <inertial mass="0.25" diaginertia="0.0001 0.001006 0.001006" pos="0 0 -0.11"/>
+          <geom type="capsule" fromto="0 0 0 0 0 -0.22" size="0.018" rgba="0.8 0.3 0.3 1"/>
+          <geom name="r_toe" type="sphere" pos="0 0 -0.22" size="0.02" rgba="0.9 0.5 0.2 1"/>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <!-- Strong actuators -->
+  <actuator>
+    <motor joint="q1" gear="400"/>
+    <motor joint="q2" gear="400"/>
+    <motor joint="q3" gear="400"/>
+    <motor joint="q4" gear="400"/>
+  </actuator>
+</mujoco>
