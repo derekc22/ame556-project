@@ -1,0 +1,87 @@
+<mujoco model="biped2d_ame556">
+  <compiler angle="radian"/>
+  
+  <option gravity="0 0 -9.81" integrator="RK4" timestep="0.0005">
+    <flag override="enable"/>
+  </option>
+  
+  <default>
+    <joint damping="0.1"/>
+    <geom contype="1" conaffinity="1" condim="3" friction="0.5 0.5 0.1"
+          solref="0.00001 1" solimp="0.95 0.99 0.0001"/>
+  </default>
+  
+  <visual>
+    <global offwidth="1920" offheight="1080"/>
+  </visual>
+  
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.4 0.6 0.8" rgb2="0.1 0.1 0.2" width="512" height="3072"/>
+    <texture type="2d" name="ground_tex" builtin="checker" rgb1="0.2 0.3 0.4" rgb2="0.1 0.15 0.2" width="300" height="300"/>
+    <material name="ground_mat" texture="ground_tex" texuniform="true" texrepeat="5 5"/>
+    <material name="stair_mat" rgba="0.6 0.5 0.4 1"/>
+    <material name="obstacle_mat" rgba="0.7 0.3 0.3 1"/>
+  </asset>
+  
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" directional="true"/>
+    <camera name="side" pos="0 -3 0.8" xyaxes="1 0 0 0 0 1" mode="trackcom"/>
+    
+    <geom name="floor" type="plane" size="50 50 0.1" material="ground_mat"/>
+    
+    <geom name="stair1" type="box" size="0.1 0.5 0.05" pos="100 0 0" material="stair_mat"/>
+    <geom name="stair2" type="box" size="0.1 0.5 0.05" pos="100 0 0" material="stair_mat"/>
+    <geom name="stair3" type="box" size="0.1 0.5 0.05" pos="100 0 0" material="stair_mat"/>
+    <geom name="stair4" type="box" size="0.1 0.5 0.05" pos="100 0 0" material="stair_mat"/>
+    <geom name="stair5" type="box" size="0.1 0.5 0.05" pos="100 0 0" material="stair_mat"/>
+    
+    <geom name="obs1" type="box" size="0.5 0.5 0.2" pos="100 0 0" material="obstacle_mat"/>
+    <geom name="obs2" type="box" size="0.5 0.5 0.2" pos="100 0 0" material="obstacle_mat"/>
+    <geom name="obs3" type="box" size="1.0 0.5 0.2" pos="100 0 0" material="obstacle_mat"/>
+    
+    <body name="trunk" pos="0 0 0.6">
+      <freejoint name="root"/>
+      <geom name="trunk_geom" type="box" size="0.075 0.04 0.125" mass="8.0" 
+            rgba="0.2 0.6 0.9 1" contype="0" conaffinity="0"/>
+      
+      <body name="left_thigh" pos="0 0 -0.125">
+        <joint name="q1" type="hinge" axis="0 1 0" range="-2.094 0.524" damping="0.1"/>
+        <geom type="capsule" fromto="0 0 0 0 0 -0.22" size="0.025" mass="0.25" 
+              rgba="0.3 0.8 0.3 1" contype="0" conaffinity="0"/>
+        <inertial pos="0 0 -0.11" mass="0.25" diaginertia="0.001008 0.001008 0.0001"/>
+        
+        <body name="left_shank" pos="0 0 -0.22">
+          <joint name="q2" type="hinge" axis="0 1 0" range="0 2.793" damping="0.1"/>
+          <geom type="capsule" fromto="0 0 0 0 0 -0.22" size="0.02" mass="0.25" 
+                rgba="0.3 0.8 0.3 1" contype="0" conaffinity="0"/>
+          <inertial pos="0 0 -0.11" mass="0.25" diaginertia="0.001008 0.001008 0.0001"/>
+          <geom name="left_foot" type="sphere" pos="0 0 -0.22" size="0.025" 
+                rgba="0.9 0.6 0.2 1" mass="0.01"/>
+        </body>
+      </body>
+      
+      <body name="right_thigh" pos="0 0 -0.125">
+        <joint name="q3" type="hinge" axis="0 1 0" range="-2.094 0.524" damping="0.1"/>
+        <geom type="capsule" fromto="0 0 0 0 0 -0.22" size="0.025" mass="0.25" 
+              rgba="0.8 0.3 0.3 1" contype="0" conaffinity="0"/>
+        <inertial pos="0 0 -0.11" mass="0.25" diaginertia="0.001008 0.001008 0.0001"/>
+        
+        <body name="right_shank" pos="0 0 -0.22">
+          <joint name="q4" type="hinge" axis="0 1 0" range="0 2.793" damping="0.1"/>
+          <geom type="capsule" fromto="0 0 0 0 0 -0.22" size="0.02" mass="0.25" 
+                rgba="0.8 0.3 0.3 1" contype="0" conaffinity="0"/>
+          <inertial pos="0 0 -0.11" mass="0.25" diaginertia="0.001008 0.001008 0.0001"/>
+          <geom name="right_foot" type="sphere" pos="0 0 -0.22" size="0.025" 
+                rgba="0.9 0.6 0.2 1" mass="0.01"/>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  
+  <actuator>
+    <motor name="hip_l" joint="q1" gear="1" ctrllimited="true" ctrlrange="-30 30"/>
+    <motor name="knee_l" joint="q2" gear="1" ctrllimited="true" ctrlrange="-60 60"/>
+    <motor name="hip_r" joint="q3" gear="1" ctrllimited="true" ctrlrange="-30 30"/>
+    <motor name="knee_r" joint="q4" gear="1" ctrllimited="true" ctrlrange="-60 60"/>
+  </actuator>
+</mujoco>
