@@ -1,0 +1,21 @@
+# Ignore Python cache everywhere in repo
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+
+# MATLAB backup files
+*.asv
+*.m~
+*.autosave
+
+# MATLAB cache
+*.mex*
+*.slxc
+
+# Video formats
+*.avi
+*.mp4
+*.mov
+
+# Misc
+.DS_Store

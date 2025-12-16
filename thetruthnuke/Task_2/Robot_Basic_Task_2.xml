@@ -1,0 +1,99 @@
+<mujoco model="robot_basic_task_2">
+
+    <!--  set the values -kp^ground and -kd^ground  -->
+    <option timestep="0.001" o_solref="-100000 -1000" gravity="0 -9.81 0">
+        <flag override="enable"/>
+    </option>
+
+    <default>
+        <geom contype="1" conaffinity="1" friction="0.5 0 0"/> <!-- slide (dynamic), spin(0), roll (0)-->
+
+        <joint type="hinge" damping="0.5"/> <!-- add joint damping-->
+    </default>
+
+    <asset>
+        <!-- Checker texture -->
+        <texture name="ground_checker"
+                    type="2d"
+                    builtin="checker"
+                    rgb1="0.45 0.45 0.45"
+                    rgb2="0.65 0.65 0.65"
+                    width="512"
+                    height="512"/>
+
+        <!-- Material using the checker texture -->
+        <material name="groundplane"
+                    texture="ground_checker"
+                    texrepeat="10 10"
+                    texuniform="true"/>
+
+        <!-- Other materials -->
+        <material name="gray" rgba="0.6 0.6 0.6 1"/>
+        <material name="blue" rgba="0.2 0.2 1 1"/>
+        <material name="red" rgba="1 0.2 0.2 1"/>
+        <material name="yellow" rgba="1 1 0.3 1"/>
+        <material name="green" rgba="0 1 0 0.5"/>
+    </asset>
+
+    <worldbody>
+        <light pos="0 0 2" dir="0 -1 -1" directional="true"/>
+
+        <!-- Ground in XZ plane at Y=0 -->
+        <body pos="0 0 0">
+            <geom name="floor" type="box" size="5 0.01 2" pos="0 -0.01 0" material="groundplane" />
+        </body>
+
+        <!-- Body (trunk) -->
+        <body name="trunk" pos="0 0 0">
+            <!-- trunk intertia-->
+            <inertial pos="0 0 0" mass="8" diaginertia="0.0567 0.0567 0.0567"/>
+
+            <!-- planar motion of trunk-->
+            <joint name="x" type="slide" axis="1 0 0"/>
+            <joint name="y" type="slide" axis="0 1 0"/>
+            <joint name="theta" type="hinge" axis="0 0 1"/>
+
+            <!-- Trunk geometry (COM) - contype 2 for trunk-->
+            <geom name="trunk_geom" type="box" size="0.075 0.125 0.01" material="gray" contype="2" conaffinity="2"/> 
+            <!-- width=0.15/2=0.075, height=0.25/2=0.125 -->
+        
+            <!-- Leg 1 - contype 4, conaffinity 5 (collides with ground=1 and trunk=2) -->
+            <body name="leg_1" pos="0 -0.125 0"> <!-- located at base of trunk in Y axis, centered in X-->
+                <inertial pos="0 -0.11 0" mass="0.25" diaginertia="0.001 1e-6 0.001"/> <!-- set the mass properties relative to body frame-->
+                <joint name="q1" type="hinge" axis="0 0 1" limited="true" range="-120 30"/>
+                <geom name="leg_1_geom" type="capsule" fromto="0 0 0 0 -0.22 0" size="0.005" material="blue" contype="4" conaffinity="3"/>
+
+                <!-- leg 2 -->
+                <body name="leg_2" pos="0 -0.22 0"> <!-- position relative to parent frame (l1)-->
+                    <inertial pos="0 -0.11 0" mass="0.25" diaginertia="0.001 1e-6 0.001"/>
+                    <joint name="q2" type="hinge" axis="0 0 1" limited="true" range="0 160"/>
+                    <geom name="leg_2_geom" type="capsule" fromto="0 0 0 0 -0.22 0" size="0.005" material="red" contype="4" conaffinity="3"/>
+                </body>
+            </body>
+
+            <!-- leg 3 - contype 8, conaffinity 9 (collides with ground=1 and trunk=2) -->
+            <body name="leg_3" pos="0 -0.125 0">
+                <inertial pos="0 -0.11 0" mass="0.25" diaginertia="0.001 1e-6 0.001"/>
+                <joint name="q3" type="hinge" axis="0 0 1" limited="true" range="-120 30"/>
+                <geom name="leg_3_geom" type="capsule" fromto="0 0 0 0 -0.22 0" size="0.005" material="green" contype="8" conaffinity="3"/>
+
+                <!-- leg 4 -->
+                <body name="leg_4" pos="0 -0.22 0">
+                    <inertial pos="0 -0.11 0" mass="0.25" diaginertia="0.001 1e-6 0.001"/>
+                    <joint name="q4" type="hinge" axis="0 0 1" limited="true" range="0 160"/>
+                    <geom name="leg_4_geom" type="capsule" fromto="0 0 0 0 -0.22 0" size="0.005" material="yellow" contype="8" conaffinity="3"/>
+                </body>
+            </body>
+        </body>
+    </worldbody>
+
+    <actuator>
+        <!-- assign actuatores to joints -->
+        <motor name="act_q1" joint="q1" gear="1"/>
+        <motor name="act_q2" joint="q2" gear="1"/>
+        <motor name="act_q3" joint="q3" gear="1"/>
+        <motor name="act_q4" joint="q4" gear="1"/>
+    </actuator>
+
+
+</mujoco>
